@@ -35,7 +35,9 @@ webPages:Enabled false
 [Parameter(ParameterSetName='SelectXmlInfo',Position=0,Mandatory=$true,ValueFromPipeline=$true)]
 [Microsoft.PowerShell.Commands.SelectXmlInfo] $SelectXmlInfo,
 # Only include attributes, ignore other child nodes.
-[Alias('Attributes','Atts')][switch] $OnlyAttributes
+[Alias('Attributes','Atts')][switch] $OnlyAttributes,
+# Replace any simple element that only contains one other element with its child.
+[Alias('CollapseSimple')][switch] $SimpleSuccession
 )
 Process
 {
@@ -61,7 +63,8 @@ Process
 			{
 				return $Element.InnerText
 			}
-			elseif(($Element.SelectNodes('*') |Group-Object Name |Measure-Object).Count -eq 1)
+			elseif($SimpleSuccession -and ($Element.Attributes.Count -eq 0) -and 
+				(($Element.SelectNodes('*') |Group-Object Name |Measure-Object).Count -eq 1))
 			{
 				return @($Element.SelectNodes('*') |ConvertFrom-XmlElement.ps1)
 			}
