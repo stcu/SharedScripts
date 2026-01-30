@@ -57,7 +57,9 @@ Begin
 End
 {
     $data = $input
-    $labels = $data |Select-Object -ExpandProperty $LabelProperty
+    $labels = $data |
+        Select-Object -ExpandProperty $LabelProperty |
+        ForEach-Object {$_ -match '\W' ? "`"$($_ -replace '"')`"" : $_}
     $minmax = $LineProperty + $BarProperty |ForEach-Object {$data |Select-Object -ExpandProperty $_} |Measure-Object -Minimum -Maximum 
     $min = $minmax.Minimum -gt 0 ? 0 : $minmax.Minimum
     $max = $minmax.Maximum
