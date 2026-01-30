@@ -22,5 +22,5 @@ Get-Module -ListAvailable |
 	Group-Object Name |
 	Where-Object Count -gt 1 |
 	ForEach-Object {$_.Group |Sort-Object Version -Descending |Select-Object -Skip 1} |
-	Where-Object {$PSCmdlet.ShouldProcess("$($_.Name) v$($_.Version)",'Uninstall-Module')} |
+	Where-Object {$Force -or $PSCmdlet.ShouldProcess("$($_.Name) v$($_.Version)",'Uninstall-Module')} |
 	ForEach-Object {Uninstall-Module $_.Name -RequiredVersion $_.Version -Force:$Force}
